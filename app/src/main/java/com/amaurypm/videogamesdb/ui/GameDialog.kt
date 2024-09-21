@@ -28,7 +28,8 @@ class GameDialog(
         genre = "",
         developer = ""
     ),
-    private val updateUI: () -> Unit
+    private val updateUI: () -> Unit,
+    private val message: (String) -> Unit
 ): DialogFragment() {
 
     private var _binding: GameDialogBinding? = null
@@ -77,22 +78,14 @@ class GameDialog(
                         repository.insertGame(game)
                     }
 
-                    Toast.makeText(
-                        requireContext(),
-                        "Juego guardado exitosamente",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    message("Juego guardado exitosamente")
 
                     updateUI()
 
                 }catch (e: IOException){
-                    Toast.makeText(
-                        requireContext(),
-                        "Error al guardar el juego",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+
+                    message("Error al guardar el juego")
+
                 }
 
             }, {
@@ -119,46 +112,42 @@ class GameDialog(
                         repository.updateGame(game)
                     }
 
-                    Toast.makeText(
-                        requireContext(),
-                        "Juego actualizado exitosamente",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    message("Juego actualizado exitosamente")
 
                     updateUI()
 
                 }catch (e: IOException){
-                    Toast.makeText(
-                        requireContext(),
-                        "Error al actualizar el juego",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+
+                    message("Error al actualizar el juego")
+
                 }
 
             }, {
                 //Acción de borrar
-                try{
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        repository.deleteGame(game)
-                    }
-                    Toast.makeText(
-                        requireContext(),
-                        "Juego borrado exitosamente",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
 
-                    updateUI()
-                }catch (e: IOException){
-                    Toast.makeText(
-                        requireContext(),
-                        "Error al borrar el juego",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                }
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Confirmación")
+                    .setMessage("¿Realmente desea eliminar el juego ${game.title}?")
+                    .setPositiveButton("Aceptar"){ _, _ ->
+                        try{
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                repository.deleteGame(game)
+                            }
+
+                            message("Juego borrado exitosamente")
+
+                            updateUI()
+                        }catch (e: IOException){
+
+                            message("Error al borrar el juego")
+
+                        }
+                    }
+                    .setNegativeButton("Cancelar"){ dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .create().show()
+
             })
 
 

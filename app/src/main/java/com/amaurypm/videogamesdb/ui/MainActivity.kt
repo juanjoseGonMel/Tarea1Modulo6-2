@@ -34,9 +34,12 @@ class MainActivity : AppCompatActivity() {
 
             //Click al registro de cada juego
 
-            val dialog = GameDialog(newGame = false, game = selectedGame) {
+            val dialog = GameDialog(newGame = false, game = selectedGame, updateUI = {
                 updateUI()
-            }
+            }, message = { text ->
+                //Aquí va la función para los mensajes
+                message(text)
+            })
 
             dialog.show(supportFragmentManager, "dialog2")
 
@@ -74,12 +77,25 @@ class MainActivity : AppCompatActivity() {
     fun click(view: View) {
         //Manejamos el click del floating action button
 
-        val dialog = GameDialog {
+        val dialog = GameDialog(updateUI = {
             updateUI()
-        }
+        }, message = { text ->
+            //Aquí va el mensaje
+            message(text)
+
+        })
+
 
         dialog.show(supportFragmentManager, "dialog1")
 
+    }
+
+    private fun message(text: String){
+        Toast.makeText(
+            this,
+            text,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     private fun updateUI(){

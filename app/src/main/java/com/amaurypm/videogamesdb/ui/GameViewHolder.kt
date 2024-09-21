@@ -9,7 +9,6 @@ class GameViewHolder(
 ): RecyclerView.ViewHolder(binding.root) {
 
     fun bind(game: GameEntity){
-
         binding.apply {
             tvTitle.text = game.title
             tvGenre.text = game.genre
