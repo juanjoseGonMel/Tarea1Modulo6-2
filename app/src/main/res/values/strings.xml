@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">VideoGames DB</string>
     <string name="no_data">¡No hay registros!</string>
+    <string name="genre">Género</string>
+    <string name="game">Juego</string>
 </resources>
