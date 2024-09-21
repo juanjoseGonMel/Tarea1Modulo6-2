@@ -6,11 +6,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.amaurypm.videogamesdb.R
 import com.amaurypm.videogamesdb.application.VideoGamesDBApp
 import com.amaurypm.videogamesdb.data.GameRepository
 import com.amaurypm.videogamesdb.data.db.model.GameEntity
 import com.amaurypm.videogamesdb.databinding.ActivityMainBinding
 import com.amaurypm.videogamesdb.util.Constants
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -91,11 +93,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun message(text: String){
-        Toast.makeText(
+        /*Toast.makeText(
             this,
             text,
             Toast.LENGTH_SHORT
-        ).show()
+        ).show()*/
+
+        Snackbar.make(
+            binding.cl,
+            text,
+            Snackbar.LENGTH_SHORT
+        )
+            .setTextColor(getColor(R.color.white))
+            .setBackgroundTint(getColor(R.color.snackbar))
+            .show()
+
+            //#9E1734
     }
 
     private fun updateUI(){

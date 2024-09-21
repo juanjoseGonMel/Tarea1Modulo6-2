@@ -18,7 +18,9 @@ import com.amaurypm.videogamesdb.data.db.model.GameEntity
 import com.amaurypm.videogamesdb.databinding.GameDialogBinding
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 class GameDialog(
@@ -75,12 +77,22 @@ class GameDialog(
                 try{
 
                     lifecycleScope.launch(Dispatchers.IO) {
-                        repository.insertGame(game)
+                        val result = async {
+                            repository.insertGame(game)
+                        }
+
+                        //Con esto nos esperamos a que se termine esta acción antes de ejecutar lo siguiente
+                        result.await()
+
+                        //Con esto mandamos la ejecución de message y updateUI al hilo principal
+                        withContext(Dispatchers.Main) {
+                            message("Juego guardado exitosamente")
+
+                            updateUI()
+                        }
                     }
 
-                    message("Juego guardado exitosamente")
 
-                    updateUI()
 
                 }catch (e: IOException){
 
@@ -109,12 +121,20 @@ class GameDialog(
                 try{
 
                     lifecycleScope.launch(Dispatchers.IO) {
-                        repository.updateGame(game)
+                        val result = async {
+                            repository.updateGame(game)
+                        }
+
+                        result.await()
+
+                        withContext(Dispatchers.Main){
+                            message("Juego actualizado exitosamente")
+
+                            updateUI()
+                        }
                     }
 
-                    message("Juego actualizado exitosamente")
 
-                    updateUI()
 
                 }catch (e: IOException){
 
@@ -125,18 +145,32 @@ class GameDialog(
             }, {
                 //Acción de borrar
 
+                //Almacenamos el contexto en una variable antes de mandar llamar el diálogo nuevo
+                val context = requireContext()
+
                 AlertDialog.Builder(requireContext())
-                    .setTitle("Confirmación")
-                    .setMessage("¿Realmente desea eliminar el juego ${game.title}?")
-                    .setPositiveButton("Aceptar"){ _, _ ->
+                    .setTitle(getString(R.string.confirm))
+                    .setMessage(getString(R.string.confirm_game, game.title))
+                    //¿Realmente desea eliminar el juego %1$s?
+                    .setPositiveButton(getString(R.string.ok)){ _, _ ->
                         try{
                             lifecycleScope.launch(Dispatchers.IO) {
-                                repository.deleteGame(game)
+
+                                val result = async {
+                                    repository.deleteGame(game)
+                                }
+
+                                result.await()
+
+                                withContext(Dispatchers.Main){
+
+                                    message(context.getString(R.string.game_removed))
+
+                                    updateUI()
+                                }
                             }
 
-                            message("Juego borrado exitosamente")
 
-                            updateUI()
                         }catch (e: IOException){
 
                             message("Error al borrar el juego")
