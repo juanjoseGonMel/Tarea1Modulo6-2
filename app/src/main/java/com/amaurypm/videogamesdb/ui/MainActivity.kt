@@ -2,6 +2,7 @@ package com.amaurypm.videogamesdb.ui
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,7 +30,23 @@ class MainActivity : AppCompatActivity() {
 
         repository = (application as VideoGamesDBApp).repository
 
-        gameAdapter = GameAdapter()
+        gameAdapter = GameAdapter{ selectedGame ->
+
+            //Click al registro de cada juego
+
+            val dialog = GameDialog(newGame = false, game = selectedGame) {
+                updateUI()
+            }
+
+            dialog.show(supportFragmentManager, "dialog2")
+
+            /*Toast.makeText(
+                this,
+                "Click en el juego: ${game.title}, con género ${game.genre}",
+                Toast.LENGTH_SHORT
+            )
+                .show()*/
+        }
 
         //Establezco el recyclerview
         binding.rvGames.apply {
@@ -57,7 +74,9 @@ class MainActivity : AppCompatActivity() {
     fun click(view: View) {
         //Manejamos el click del floating action button
 
-        val dialog = GameDialog()
+        val dialog = GameDialog {
+            updateUI()
+        }
 
         dialog.show(supportFragmentManager, "dialog1")
 
