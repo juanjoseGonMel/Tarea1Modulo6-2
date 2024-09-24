@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "VideoGames DB"
+rootProject.name = "Tarea1"
 include(":app")
